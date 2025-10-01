@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Hotel Pleno Mar Necochea</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body class="{% if modo_oscuro %}modo-oscuro{% endif %}">
+  <header>
+    <div class="logo-header">
+      <img src="{{url_for('static', filename='img/logo_pleno_mar.png') }}" alt="logo del hotel">
+    <h1>Hotel Pleno Mar Necochea</h1>
+    <nav>
+      <a href="{{ url_for('inicio') }}">🏠 Inicio</a>
+      <a href="{{ url_for('habitaciones.ver_habitaciones') }}">Habitaciones</a>
+      <a href="{{ url_for('clientes.ver_clientes') }}">Clientes</a>
+      <a href="{{ url_for('reservas.ver_reservas') }}">Reservas</a>
+      <a href="{{ url_for('reservas.ver_calendario') }}">📅 Calendario</a>
+
+    </nav>
+  </header>
+
+  <main>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash">{{ messages[0] }}</div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer>
+  <div class="footer-logo">
+    <img src="{{ url_for('static', filename='img/logo_sc.png')}}" >
+  </div>
+  <p>Desarrollado por <strong>Sebastian Eduardo Copperi</strong></p>
+  <p>Ultima actualizacion : 22 de setiembre de 2025</p>
+  </footer> 
+  <footer>
+    <p>Hotel Manager &copy; 2025</p>
+  </footer>
+  
+  <script>
+  const toggle = document.getElementById('modoToggle');
+
+  // Aplicar modo guardado al cargar
+  if (localStorage.getItem('modo') === 'oscuro') {
+    document.body.classList.add('modo-oscuro');
+  }
+
+  // Alternar y guardar
+  toggle?.addEventListener('click', () => {
+    document.body.classList.toggle('modo-oscuro');
+    const modo = document.body.classList.contains('modo-oscuro') ? 'oscuro' : 'claro';
+    localStorage.setItem('modo', modo);
+  });
+</script>
+
+</body>
+</html>

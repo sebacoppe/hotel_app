@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Agregar nueva reserva</h2>
+
+<form method="post" class="formulario">
+  <label for="id_reserva">ID Reserva:</label>
+  <input type="text" name="id_reserva" id="id_reserva" required>
+
+  <label for="id_cliente">Cliente:</label>
+  <select name="id_cliente" id="id_cliente" required>
+    {% for c in clientes %}
+    <option value="{{ c.id }}">{{ c.nombre }} {{ c.apellido }} (DNI: {{ c.dni }})</option>
+    {% endfor %}
+  </select>
+
+  <label for="numero_habitacion">Habitación:</label>
+  <select name="numero_habitacion" id="numero_habitacion" required>
+    {% for h in habitaciones %}
+    <option value="{{ h.numero }}">{{ h.numero }} - {{ h.tipo }} - ${{ h.precio }}</option>
+    {% endfor %}
+  </select>
+
+  <label for="fecha_entrada">Fecha entrada:</label>
+  <input type="date" name="fecha_entrada" id="fecha_entrada" required>
+
+  <label for="fecha_salida">Fecha salida:</label>
+  <input type="date" name="fecha_salida" id="fecha_salida" required>
+
+  <label for="estado">Estado:</label>
+  <select name="estado" id="estado">
+    <option value="activa">Activa</option>
+    <option value="finalizada">Finalizada</option>
+    <option value="cancelada">Cancelada</option>
+  </select>
+
+  <label for="total">Total:</label>
+  <input type="number" name="total" id="total" required>
+
+  <button type="submit">Guardar reserva</button>
+</form>
+{% endblock %}

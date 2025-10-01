@@ -1,0 +1,27 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<h2>Agregar nuevo cliente</h2>
+
+<form method="post" class="formulario">
+  <label for="id">ID:</label>
+  <input type="text" name="id" id="id" required>
+
+  <label for="nombre">Nombre:</label>
+  <input type="text" name="nombre" id="nombre" required>
+
+  <label for="apellido">Apellido:</label>
+  <input type="text" name="apellido" id="apellido" required>
+
+  <label for="dni">DNI:</label>
+  <input type="text" name="dni" id="dni" required>
+
+  <label for="telefono">Teléfono:</label>
+  <input type="text" name="telefono" id="telefono" required>
+
+  <label for="email">Email:</label>
+  <input type="email" name="email" id="email" required>
+
+  <button type="submit">Guardar cliente</button>
+</form>
+{% endblock %}

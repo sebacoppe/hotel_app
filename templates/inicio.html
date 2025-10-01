@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="inicio-container">
+  <img src=" {{ url_for('static', filename='img/pleno_mar_1.jpg') }}" alt="Hotel" class="inicio-imagen">
+  <h2>Bienvenido al sistema de gestión hotelera</h2>
+  <p>Desde aquí podés administrar habitaciones, clientes y reservas de forma rápida y eficiente.</p>
+  </div>
+<div class="dashboard-container">
+  <h2>Panel principal</h2>
+
+  <div class="tarjetas">
+    <a href="{{ url_for('clientes.ver_clientes') }}" class="tarjeta">
+      <div class="icono">👤</div>
+      <div class="texto">Clientes</div>
+    </a>
+    <a href="{{ url_for('habitaciones.ver_habitaciones') }}" class="tarjeta">
+      <div class="icono">🛏️</div>
+      <div class="texto">Habitaciones</div>
+    </a>
+    <a href="{{ url_for('reservas.ver_reservas') }}" class="tarjeta">
+      <div class="icono">📅</div>
+      <div class="texto">Reservas</div>
+    </a>
+  </div>
+
+  <button id="modoToggle">🌙 Cambiar modo</button>
+</div>  
+
+<div class="carrusel-container">
+  <div class="carrusel">
+    <div class="slide activo">
+      <img src="{{ url_for('static', filename='img/pleno_mar_2.jpg') }}" alt="Recepción moderna">
+    </div>
+    <div class="slide">
+      <img src="{{ url_for('static', filename='img/pleno_mar_3.png') }}" alt="Habitación elegante">
+    </div>
+    <div class="slide">
+      <img src="{{ url_for('static', filename='img/pleno_mar_4.png') }}" alt="Vista panorámica">
+    </div>
+  </div>
+</div>
+
+{% endblock %}

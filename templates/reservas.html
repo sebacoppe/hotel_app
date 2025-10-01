@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Listado de Reservas</h2>
+
+<table>
+  <tr>
+    <th>ID Reserva</th>
+    <th>ID Cliente</th>
+    <th>Habitación</th>
+    <th>Entrada</th>
+    <th>Salida</th>
+    <th>Estado</th>
+    <th>Total</th>
+    <th>Acciones</th>
+  </tr>
+  {% for r in reservas %}
+  <tr>
+    <td>{{ r.id_reserva }}</td>
+    <td>{{ r.id_cliente }}</td>
+    <td>{{ r.numero_habitacion }}</td>
+    <td>{{ r.fecha_entrada }}</td>
+    <td>{{ r.fecha_salida }}</td>
+    <td>{{ r.estado }}</td>
+    <td>${{ r.total }}</td>
+    <td>
+      <a href="{{ url_for('reservas.historial_por_cliente', id_cliente=r.id_cliente) }}">📄 Historial</a>
+      <a href="{{ url_for('reservas.cancelar_reserva', id_reserva=r.id_reserva) }}">❌ Cancelar</a>
+      <a href="{{ url_for('reservas.editar_reserva', id_reserva=r.id_reserva) }}">✏️ Editar</a>
+
+
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+<a href="{{ url_for('reservas.agregar_reserva') }}">➕ Agregar reserva</a>
+
+
+
+
+{% endblock %}

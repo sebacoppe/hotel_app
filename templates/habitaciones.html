@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Listado de Habitaciones</h2>
+
+<form method="get">
+  <label for="estado">Filtrar por estado:</label>
+  <select name="estado" onchange="this.form.submit()">
+    <option value="">-- Todos --</option>
+    <option value="disponible" {% if estado_filtro == 'disponible' %}selected{% endif %}>Disponible</option>
+    <option value="ocupada" {% if estado_filtro == 'ocupada' %}selected{% endif %}>Ocupada</option>
+    <option value="mantenimiento" {% if estado_filtro == 'mantenimiento' %}selected{% endif %}>Mantenimiento</option>
+  </select>
+</form>
+
+<table>
+  <tr>
+    <th>Número</th>
+    <th>Tipo</th>
+    <th>Estado</th>
+    <th>Precio</th>
+    <th>Planta</th>
+    <th>Acciones</th>
+  </tr>
+  {% for h in habitaciones %}
+  <tr class="estado-{{ h.estado }}">
+    <td>{{ h.numero }}</td>
+    <td>{{ h.tipo }}</td>
+    <td>{{ h.estado }}</td>
+    <td>${{ h.precio }}</td>
+    <td>{{ h.planta }}</td>
+    <td>
+      
+      <a href="{{ url_for('habitaciones.editar_habitacion', numero=h.numero) }}">🛠️ Editar habitacion</a>
+    </td>
+  </tr>  
+  {% endfor %}
+</table>
+<a href="{{ url_for('habitaciones.agregar_habitacion') }}">➕ Agregar habitación</a>
+{% endblock %}
+
+

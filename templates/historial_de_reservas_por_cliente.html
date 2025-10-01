@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Historial de reservas del cliente {{ id_cliente }}</h2>
+<table>
+  <tr>
+    <th>ID Reserva</th>
+    <th>Habitación</th>
+    <th>Entrada</th>
+    <th>Salida</th>
+    <th>Estado</th>
+    <th>Total</th>
+  </tr>
+  {% for r in reservas %}
+  <tr>
+    <td>{{ r.id_reserva }}</td>
+    <td>{{ r.numero_habitacion }}</td>
+    <td>{{ r.fecha_entrada }}</td>
+    <td>{{ r.fecha_salida }}</td>
+    <td>{{ r.estado }}</td>
+    <td>${{ r.total }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

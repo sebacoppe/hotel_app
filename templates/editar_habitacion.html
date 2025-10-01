@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Editar habitación completa</h2>
+<form method="POST" class="formulario">
+  <label>Número:</label>
+  <input type="text" name="numero" value="{{ habitacion.numero }}" required>
+
+  <label>Tipo:</label>
+  <select name="tipo">
+    <option value="simple" {% if habitacion.tipo == 'simple' %}selected{% endif %}>Simple</option>
+    <option value="doble" {% if habitacion.tipo == 'doble' %}selected{% endif %}>Doble</option>
+    <option value="suite" {% if habitacion.tipo == 'suite' %}selected{% endif %}>Suite</option>
+  </select>
+
+  <label>Estado:</label>
+  <select name="estado">
+    <option value="disponible" {% if habitacion.estado == 'disponible' %}selected{% endif %}>Disponible</option>
+    <option value="ocupada" {% if habitacion.estado == 'ocupada' %}selected{% endif %}>Ocupada</option>
+    <option value="reservada" {% if habitacion.estado == 'reservada' %}selected{% endif %}>Reservada</option>
+    <option value="fuera" {% if habitacion.estado == 'fuera' %}selected{% endif %}>Fuera de servicio</option>
+  </select>
+
+  <label>Precio:</label>
+  <input type="number" name="precio" step="0.01" value="{{ habitacion.precio }}" required>
+
+  <label>Planta:</label>
+  <select name="planta">
+    <option value="baja" {% if habitacion.planta == 'baja' %}selected{% endif %}>Planta baja</option>
+    <option value="alta" {% if habitacion.planta == 'alta' %}selected{% endif %}>Planta alta</option>
+  </select>
+
+  <button type="submit">Guardar cambios</button>
+</form>
+{% endblock %}

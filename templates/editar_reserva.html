@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Editar reserva</h2>
+<form method="post">
+  <label>Fecha entrada:</label>
+  <input type="date" name="fecha_entrada" value="{{ reserva.fecha_entrada }}" required>
+
+  <label>Fecha salida:</label>
+  <input type="date" name="fecha_salida" value="{{ reserva.fecha_salida }}" required>
+
+  <label>Estado:</label>
+  <select name="estado">
+    <option value="activa" {% if reserva.estado == 'activa' %}selected{% endif %}>Activa</option>
+    <option value="finalizada" {% if reserva.estado == 'finalizada' %}selected{% endif %}>Finalizada</option>
+    <option value="cancelada" {% if reserva.estado == 'cancelada' %}selected{% endif %}>Cancelada</option>
+  </select>
+
+  <label>Total:</label>
+  <input type="number" name="total" value="{{ reserva.total }}" required>
+
+  <button type="submit">Guardar cambios</button>
+</form>
+{% endblock %}
