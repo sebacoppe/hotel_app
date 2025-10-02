@@ -18,6 +18,23 @@ body {
   padding: 0;
 }
 
+.contenedor {
+    background-color: rgba(0,0,0,0.3);
+    padding: 40px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.boton {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #ffc107;
+    color: black;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
 /* 🧭 Encabezado */
 header {
   background-color: var(--color-primario);
