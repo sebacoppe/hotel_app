@@ -73,7 +73,7 @@
         center: 'title',
         right: 'dayGridMonth,timeGridWeek,listWeek'
       },
-      events: {{ eventos|safe }},
+      events: {{ eventos|tojson }},
       eventClick: function(info) {
         const datos = info.event.extendedProps;
 
