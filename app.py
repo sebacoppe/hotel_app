@@ -29,12 +29,12 @@ app.register_blueprint(habitaciones_bp)
 app.register_blueprint(clientes_bp)
 app.register_blueprint(reservas_bp)
 
-"""
+
 @app.route('/')
 def inicio():
     return render_template('inicio.html')
 
-"""
+
 @app.route('/')
 def bienvenida():
     return render_template('bienvenida.html')
