@@ -35,12 +35,6 @@ def inicio():
     return render_template('inicio.html')
 
 
-@app.route('/')
-def bienvenida():
-    return render_template('bienvenida.html')
-
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
