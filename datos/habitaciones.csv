@@ -1,3 +1,3 @@
 numero,tipo,estado,precio,planta
 1,suite,disponible,0,baja
-2,simple,disponible,0,baja
+2,simple,reservada,0,baja

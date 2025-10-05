@@ -192,6 +192,16 @@ def fechas_libres(numero_habitacion, reservas, desde=None, dias=3, rango_busqued
 
     return libres
 
+
+
+def guardar_una_reserva(reserva):
+    with open(RUTA_RESERVAS, 'a', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=[
+            'id_reserva','id_cliente','numero_habitacion',
+            'fecha_entrada','fecha_salida','estado','total','fecha_reserva'
+        ])
+        writer.writerow(reserva.to_dict())
+
     
     
 

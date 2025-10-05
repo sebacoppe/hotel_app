@@ -1,0 +1,26 @@
+con esto subimos a GITHUB
+
+git add .
+git commit -m "Agrego ruta y plantilla de bienvenida"
+git push
+
+
+en la terminal 
+
+Render hizo el despliegue?
+Entrá a tu panel en Render
+
+Verificá que el último commit se haya desplegado
+
+Si no, hacé clic en “Manual Deploy → Deploy latest commit”
+
+✅ Paso 3: Render detecta el cambio automáticamente
+Render está conectado a tu repositorio. Entonces:
+
+En unos segundos, Render detecta el nuevo commit
+
+Inicia un nuevo despliegue automáticamente
+
+Actualiza tu app en la web
+
+Si no lo hace solo, podés ir a Render y hacer clic en “Manual Deploy → Deploy latest commit”

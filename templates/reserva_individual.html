@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="reserva-individual">
+  <h2>🛏️ Reserva #{{ reserva.id_reserva }}</h2>
+  <ul>
+    <li><strong>Cliente:</strong> {{ reserva.id_cliente }}</li>
+    <li><strong>Habitación:</strong> {{ reserva.numero_habitacion }}</li>
+    <li><strong>Entrada:</strong> {{ reserva.fecha_entrada.strftime('%Y-%m-%d') }}</li>
+    <li><strong>Salida:</strong> {{ reserva.fecha_salida.strftime('%Y-%m-%d') }}</li>
+    <li><strong>Estado:</strong> {{ reserva.estado }}</li>
+    <li><strong>Total:</strong> ${{ reserva.total }}</li>
+  </ul>
+
+  <h3>📱 Código QR</h3>
+  <img src="{{ url_for('static', filename=ruta_qr) }}" alt="QR de reserva" style="width:200px;">
+
+  <br><br>
+  <a href="{{ url_for('reservas.ver_reservas') }}" class="btn btn-secondary">← Volver al listado</a>
+</div>
+
+{% endblock %}

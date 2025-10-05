@@ -11,8 +11,8 @@ def actualizar_estados_por_fecha(habitaciones, reservas):
         estado_actual = 'disponible'
         for r in reservas:
             if r.numero_habitacion == h.numero and r.estado != 'cancelada':
-                entrada = datetime.strptime(r.fecha_entrada, '%Y-%m-%d').date()
-                salida = datetime.strptime(r.fecha_salida, '%Y-%m-%d').date()
+                entrada = r.fecha_entrada.date()
+                salida = r.fecha_salida.date()
                 if entrada <= hoy < salida:
                     estado_actual = 'ocupada'
                     break

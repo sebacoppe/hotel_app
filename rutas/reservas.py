@@ -1,13 +1,46 @@
-from modelos import Reserva,cargar_reserva,guardar_reserva,cargar_clientes,cargar_habitaciones
+from modelos import Reserva,cargar_reserva,guardar_reserva,cargar_clientes,cargar_habitaciones,guardar_una_reserva
 from flask import Blueprint,render_template,request,redirect,url_for,flash
 from datetime import datetime
+from utils.qr import generar_qr_para_reserva 
 
 reservas_bp = Blueprint('reservas', __name__)
 
+@reservas_bp.route('/reserva/<int:id>')
+def ver_reserva(id): # reserva individual
+    reservas = cargar_reserva()
+    clientes = cargar_clientes()
+
+    reserva = next((r for r in reservas if r.id_reserva == str(id)), None)
+    if not reserva:
+        flash("Reserva no encontrada")
+        return redirect(url_for('reservas.ver_reservas'))
+
+    cliente = next((c for c in clientes if c.id == reserva.id_cliente), None)
+    nombre_cliente = f"{cliente.nombre}_{cliente.apellido}" if cliente else "Cliente"
+    nombre_limpio = nombre_cliente.replace(" ", "_")
+    fecha_formateada = reserva.fecha_entrada.strftime('%Y%m%d')
+
+    nombre_archivo = f"reserva_{id}_{nombre_limpio}_{fecha_formateada}.png"
+    ruta_qr = f"qr/{nombre_archivo}"
+
+    return render_template('reserva_individual.html', reserva=reserva, ruta_qr=ruta_qr)
+
+    
+    
+    
+    
+
+
 @reservas_bp.route('/reservas')
-def ver_reservas():
+def ver_reservas(): # ver el listado de reservas 
     lista = cargar_reserva()
     return render_template('reservas.html', reservas=lista)
+
+        
+    
+    
+
+
 
 @reservas_bp.route('/reservas/agregar', methods=['GET', 'POST'])
 def agregar_reserva():
@@ -15,33 +48,42 @@ def agregar_reserva():
     habitaciones = cargar_habitaciones()
 
     if request.method == 'POST':
-        id_reserva = request.form['id_reserva']
+        # Generar ID automáticamente
+        reservas_existentes = cargar_reserva()
+        if reservas_existentes:
+            ultimo_id = max(int(r.id_reserva) for r in reservas_existentes)
+            nuevo_id = str(ultimo_id + 1)
+        else:
+            nuevo_id = "1"
+
         id_cliente = request.form['id_cliente']
         numero_habitacion = request.form['numero_habitacion']
-        fecha_entrada = request.form['fecha_entrada']
-        fecha_salida = request.form['fecha_salida']
+        fecha_entrada = datetime.strptime(request.form['fecha_entrada'], '%Y-%m-%d')
+        fecha_salida = datetime.strptime(request.form['fecha_salida'], '%Y-%m-%d')
         estado = request.form['estado']
         total = request.form['total']
-        
-        # Validar que el cliente exista
-        if not any(c.id == id_cliente for c in clientes):
+
+        # Validar cliente
+        cliente = next((c for c in clientes if c.id == id_cliente), None)
+        if not cliente:
             flash('Cliente no encontrado')
             return redirect(url_for('reservas.agregar_reserva'))
-        
-    
-        nueva = Reserva(id_reserva, id_cliente, numero_habitacion, fecha_entrada, fecha_salida, estado, total)
-        # Verificar que la habitación esté disponible en ese rango
-        for r in cargar_reserva():
-                if r.numero_habitacion == numero_habitacion and r.estado in ['activa','reservada']:
-                    entrada_existente = datetime.strptime(r.fecha_entrada, '%Y-%m-$d')
-                    salida_existente = datetime.strptime(r.fecha_salida, '%Y-%m-%d' )
-                    nueva_entrada = datetime.strptime(fecha_entrada, '%Y-%m-%d')
-                    nueva_salida = datetime.strptime(fecha_salida, '%Y-%m-%d')
-                    
-                    if nueva_entrada < salida_existente and nueva_salida > entrada_existente:
-                        flash('La habitacion ya esta reservada en ese periodo')
-                        return redirect(url_for('reservas.agregar_reserva'))
-        guardar_reserva(nueva)
+
+        nueva = Reserva(nuevo_id, id_cliente, numero_habitacion, fecha_entrada, fecha_salida, estado, total)
+
+        # Validar disponibilidad
+        for r in reservas_existentes:
+            if r.numero_habitacion == numero_habitacion and r.estado in ['activa', 'reservada']:
+                if fecha_entrada < r.fecha_salida and fecha_salida > r.fecha_entrada:
+                    flash('La habitación ya está reservada en ese periodo')
+                    return redirect(url_for('reservas.agregar_reserva'))
+
+        guardar_una_reserva(nueva)
+
+        # Generar QR personalizado
+        nombre_cliente = f"{cliente.nombre} {cliente.apellido}"
+        generar_qr_para_reserva(nuevo_id, nombre_cliente, fecha_entrada)
+
         flash('Reserva creada correctamente')
         return redirect(url_for('reservas.ver_reservas'))
 
@@ -64,10 +106,10 @@ def editar_reserva(id_reserva):
         return redirect(url_for('reservas.ver_reservas'))
 
     if request.method == 'POST':
-        reserva.fecha_entrada == request.form['fecha_entrada']
-        reserva.fecha_salida == request.form['fecha_salida']
-        reserva.estado == request.form['estado']
-        reserva.total == request.form['total']
+        reserva.fecha_entrada = request.form['fecha_entrada']
+        reserva.fecha_salida = request.form['fecha_salida']
+        reserva.estado = request.form['estado']
+        reserva.total = request.form['total']
         guardar_reserva(reservas) # guarda toda la lista 
         flash('Reserva actualizada correctamente')
         return redirect(url_for('reservas.ver_reservas'))
@@ -89,6 +131,18 @@ def cancelar_reserva(id_reserva):
             
     return redirect(url_for('reservas.ver_reservas'))
 
+"""
+@reservas_bp.route('/reservas/<int:id>')
+def ver_reserva(id):
+    reservas = cargar_reserva()
+    reserva = next((r for r in reservas if r.id.reserva == str(id)),None)
+    ruta_qr = generar_qr_para_reserva(id)
+    return render_template('reservas.html', reserva=reserva , ruta_qr=ruta_qr) 
+
+"""
+
+
+
 
 @reservas_bp.route('/reservas/calendario')
 def ver_calendario():
@@ -104,8 +158,8 @@ def ver_calendario():
         eventos.append({
             'id': r.id_reserva,
             'title': f"Habitación {r.numero_habitacion}",
-            'start': r.fecha_entrada,
-            'end': r.fecha_salida,
+            'start': r.fecha_entrada.strftime('%Y-%m-%d'),
+            'end': r.fecha_salida.strftime('%Y-%m-%d'),
             'color': estado_color(r.estado),
             'cliente': nombre  # nombre completo del cliente
         })

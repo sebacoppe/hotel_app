@@ -23,13 +23,13 @@
     <td>{{ r.estado }}</td>
     <td>${{ r.total }}</td>
     <td>
-      <a href="{{ url_for('reservas.historial_por_cliente', id_cliente=r.id_cliente) }}">📄 Historial</a>
+      <a href="{{ url_for('reservas.ver_reserva', id=r.id_reserva) }}" class="btn btn-info">👁️ Ver</a>
       <a href="{{ url_for('reservas.cancelar_reserva', id_reserva=r.id_reserva) }}">❌ Cancelar</a>
       <a href="{{ url_for('reservas.editar_reserva', id_reserva=r.id_reserva) }}">✏️ Editar</a>
-
-
+      
     </td>
   </tr>
+  
   {% endfor %}
 </table>
 <a href="{{ url_for('reservas.agregar_reserva') }}">➕ Agregar reserva</a>
