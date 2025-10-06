@@ -1,24 +1,10 @@
 import csv
 from flask import Blueprint,render_template,request,redirect,url_for,flash
-from modelos import Habitacion,cargar_habitaciones,guardar_habitacion,RUTA_HABITACIONES,cargar_reserva
+from modelos import Habitacion,cargar_habitaciones,guardar_habitaciones,RUTA_HABITACIONES,cargar_reserva,guardar_habitacion,actualizar_estados_por_fecha
 from datetime import datetime, date
 
 habitaciones_bp = Blueprint('habitaciones',__name__)
 
-def actualizar_estados_por_fecha(habitaciones, reservas):
-    hoy = date.today()
-    for h in habitaciones:
-        estado_actual = 'disponible'
-        for r in reservas:
-            if r.numero_habitacion == h.numero and r.estado != 'cancelada':
-                entrada = r.fecha_entrada.date()
-                salida = r.fecha_salida.date()
-                if entrada <= hoy < salida:
-                    estado_actual = 'ocupada'
-                    break
-                elif hoy < entrada:
-                    estado_actual = 'reservada'
-        h.estado = estado_actual
 
 
 
@@ -27,7 +13,10 @@ def ver_habitaciones():
     estado_filtro = request.args.get('estado')
     habitaciones = cargar_habitaciones()
     reservas = cargar_reserva()
+    
     actualizar_estados_por_fecha(habitaciones, reservas)
+    
+    guardar_habitaciones(habitaciones)
     
     if estado_filtro:
         habitaciones = [h for h in habitaciones if h.estado == estado_filtro]
@@ -71,11 +60,8 @@ def editar_estado(numero):
         habitacion.estado = nuevo_estado
         
         # guardar todas las habitaciones actualizadas 
-        with open(RUTA_HABITACIONES, 'w', newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f,fieldnames=['numero','tipo','estado','precio'])
-            writer.writeheader()
-            for h in habitaciones:
-                writer.writerow(h.to_dict())
+        guardar_habitaciones(habitaciones)
+
         flash(f"Estado de la habitacion {numero} actualizado")
         return redirect(url_for('habitaciones.ver_habitaciones'))
                         
@@ -86,6 +72,7 @@ def editar_estado(numero):
 def editar_habitacion(numero):
     habitaciones = cargar_habitaciones()
     habitacion = next((h for h in habitaciones if h.numero == numero), None)
+    
     if not habitacion:
         flash("Habitación no encontrada")
         return redirect(url_for('habitaciones.ver_habitaciones'))
@@ -96,15 +83,11 @@ def editar_habitacion(numero):
         habitacion.estado = request.form['estado']
         habitacion.precio = request.form['precio']
         habitacion.planta = request.form['planta']
-
-        with open(RUTA_HABITACIONES, 'w', newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=['numero','tipo','estado','precio','planta'])
-            writer.writeheader()
-            for h in habitaciones:
-                writer.writerow(h.to_dict())
-
-        flash(f"Habitación {numero} actualizada correctamente")
+        guardar_habitaciones(habitaciones)
+        flash("Habitacion actualizada correctamente")
         return redirect(url_for('habitaciones.ver_habitaciones'))
+
+    
 
     return render_template('editar_habitacion.html', habitacion=habitacion)
     

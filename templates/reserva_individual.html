@@ -14,7 +14,12 @@
 
   <h3>📱 Código QR</h3>
   <img src="{{ url_for('static', filename=ruta_qr) }}" alt="QR de reserva" style="width:200px;">
-
+  <div class="btn-group" role="group">
+  <!-- Botón para descargar -->
+  <a href="{{ url_for('static', filename=ruta_qr) }}" download class="btn btn-secondary">⬇️ Descargar QR</a>
+  <!-- Botón para compartir por WhatsApp -->
+  <a href="https://wa.me/?text={{ request.url }}" target="_blank" class="btn btn-success">📲 Compartir por WhatsApp</a>
+  </div>
   <br><br>
   <a href="{{ url_for('reservas.ver_reservas') }}" class="btn btn-secondary">← Volver al listado</a>
 </div>

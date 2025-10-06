@@ -23,10 +23,15 @@
     <td>{{ r.estado }}</td>
     <td>${{ r.total }}</td>
     <td>
+    <div class="btn-group" role="group">
       <a href="{{ url_for('reservas.ver_reserva', id=r.id_reserva) }}" class="btn btn-info">👁️ Ver</a>
       <a href="{{ url_for('reservas.cancelar_reserva', id_reserva=r.id_reserva) }}">❌ Cancelar</a>
       <a href="{{ url_for('reservas.editar_reserva', id_reserva=r.id_reserva) }}">✏️ Editar</a>
-      
+      <form action="{{ url_for('reservas.eliminar_reserva', id_reserva=r.id_reserva) }}" method="post" style="display:inline;">
+          <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que querés eliminar esta reserva?')">🗑️ Eliminar</button>
+      </form>
+    </div>
+
     </td>
   </tr>
   

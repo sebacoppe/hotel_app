@@ -9,7 +9,11 @@
   <select name="tipo">
     <option value="simple" {% if habitacion.tipo == 'simple' %}selected{% endif %}>Simple</option>
     <option value="doble" {% if habitacion.tipo == 'doble' %}selected{% endif %}>Doble</option>
-    <option value="suite" {% if habitacion.tipo == 'suite' %}selected{% endif %}>Suite</option>
+    <option value="suite_para_5" {% if habitacion.tipo == 'suite_para_5' %}selected{% endif %}>Suite para 5 personas</option>
+    <option value="suite_para_7" {% if habitacion.tipo == 'suite_para_7' %}selected{% endif %}>Suite para 7 personas</option>
+    <option value="triple" {% if habitacion.tipo == 'triple' %}selected{% endif %}>Triples</option>
+    <option value="cuadruple" {% if habitacion.tipo == 'cuadruple' %}selected{% endif %}>Cuadruples</option>
+
   </select>
 
   <label>Estado:</label>
@@ -17,7 +21,7 @@
     <option value="disponible" {% if habitacion.estado == 'disponible' %}selected{% endif %}>Disponible</option>
     <option value="ocupada" {% if habitacion.estado == 'ocupada' %}selected{% endif %}>Ocupada</option>
     <option value="reservada" {% if habitacion.estado == 'reservada' %}selected{% endif %}>Reservada</option>
-    <option value="fuera" {% if habitacion.estado == 'fuera' %}selected{% endif %}>Fuera de servicio</option>
+    <option value="fuera_servicio" {% if habitacion.estado == 'fuera_servicio' %}selected{% endif %}>Fuera de servicio</option>
   </select>
 
   <label>Precio:</label>

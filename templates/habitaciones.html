@@ -25,7 +25,11 @@
   <tr class="estado-{{ h.estado }}">
     <td>{{ h.numero }}</td>
     <td>{{ h.tipo }}</td>
-    <td>{{ h.estado }}</td>
+    <td>
+        <span class="badge {% if h.estado == 'ocupada' %}bg-danger{% elif h.estado == 'reservada' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+            {{ h.estado.capitalize() }}
+        </span>
+    </td>
     <td>${{ h.precio }}</td>
     <td>{{ h.planta }}</td>
     <td>

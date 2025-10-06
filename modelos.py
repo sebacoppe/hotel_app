@@ -5,7 +5,8 @@
 
 import os
 import csv
-from datetime import datetime,timedelta
+from datetime import datetime,timedelta,date
+
 
 def inicializar_csv():
     archivos = {
@@ -67,11 +68,21 @@ def cargar_habitaciones():
             habitaciones.append(habitacion)
     return habitaciones 
 
-
-def guardar_habitacion(habitacion):
-    with open(RUTA_HABITACIONES, 'a' ,newline='', encoding='utf-8') as f:
+def guardar_habitacion(habitacion): #para agregar una nueva
+    with open(RUTA_HABITACIONES, 'a', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=['numero','tipo','estado','precio','planta'])
         writer.writerow(habitacion.to_dict())
+    
+
+
+
+def guardar_habitaciones(lista_habitaciones): #para sobrescribir todo (ideal para edición)
+    with open(RUTA_HABITACIONES,'w', newline='',encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=['numero','tipo','estado','precio','planta'])
+        writer.writeheader()
+        for h in lista_habitaciones:
+            writer.writerow(h.to_dict())
+    
         
     
 
@@ -176,6 +187,28 @@ def guardar_reserva(lista):
         writer.writeheader()
         for reserva in lista:
             writer.writerow(reserva.to_dict())
+            
+def actualizar_estados_por_fecha(habitaciones, reservas):
+    hoy = date.today()
+    for h in habitaciones:
+        h.estado = 'disponible' # valor x defecto 
+        
+        for r in reservas:
+            if r.numero_habitacion == h.numero and r.estado != 'cancelada':
+                entrada = r.fecha_entrada.date()
+                salida = r.fecha_salida.date()
+                
+                if entrada <= hoy < salida:
+                    h.estado = 'ocupada'
+                    break # ya esta ocupada , no hace falta seguir
+                elif hoy < entrada:
+                    h.estado = 'reservada'            
+            
+def sincronizar_estados_habitaciones():
+    habitaciones = cargar_habitaciones()
+    reservas = cargar_reserva()
+    actualizar_estados_por_fecha(habitaciones, reservas)
+    guardar_habitaciones(habitaciones)            
             
             
 def fechas_libres(numero_habitacion, reservas, desde=None, dias=3, rango_busqueda=30):

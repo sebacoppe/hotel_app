@@ -1,4 +1,4 @@
-from modelos import Reserva,cargar_reserva,guardar_reserva,cargar_clientes,cargar_habitaciones,guardar_una_reserva
+from modelos import Reserva,cargar_reserva,guardar_reserva,cargar_clientes,cargar_habitaciones,guardar_una_reserva,sincronizar_estados_habitaciones
 from flask import Blueprint,render_template,request,redirect,url_for,flash
 from datetime import datetime
 from utils.qr import generar_qr_para_reserva 
@@ -79,6 +79,8 @@ def agregar_reserva():
                     return redirect(url_for('reservas.agregar_reserva'))
 
         guardar_una_reserva(nueva)
+        
+        sincronizar_estados_habitaciones()
 
         # Generar QR personalizado
         nombre_cliente = f"{cliente.nombre} {cliente.apellido}"
@@ -124,6 +126,7 @@ def cancelar_reserva(id_reserva):
     if reserva:
         reserva.estado = 'cancelada'
         guardar_reserva(reservas)
+        sincronizar_estados_habitaciones()
         flash('Reserva cancelada ')
         
     else: 
@@ -131,15 +134,21 @@ def cancelar_reserva(id_reserva):
             
     return redirect(url_for('reservas.ver_reservas'))
 
-"""
-@reservas_bp.route('/reservas/<int:id>')
-def ver_reserva(id):
-    reservas = cargar_reserva()
-    reserva = next((r for r in reservas if r.id.reserva == str(id)),None)
-    ruta_qr = generar_qr_para_reserva(id)
-    return render_template('reservas.html', reserva=reserva , ruta_qr=ruta_qr) 
 
-"""
+@reservas_bp.route('/reservas/eliminar/<id_reserva>', methods=['POST'])
+def eliminar_reserva(id_reserva):
+    reservas = cargar_reserva()
+    reservas_filtradas = [r for r in reservas if r.id_reserva != id_reserva]
+
+    if len(reservas_filtradas) < len(reservas):
+        guardar_reserva(reservas_filtradas)
+        flash('Reserva eliminada correctamente')
+    else:
+        flash('Reserva no encontrada')
+
+    return redirect(url_for('reservas.ver_reservas'))
+
+
 
 
 
