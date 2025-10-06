@@ -1,7 +1,7 @@
 con esto subimos a GITHUB
 
 git add .
-git commit -m "Agrego ruta y plantilla de bienvenida"
+git commit -m "Agrego ultima actualizacion"
 git push
 
 
