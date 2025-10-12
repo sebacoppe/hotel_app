@@ -5,6 +5,10 @@
   <h2>🛏️ Reserva #{{ reserva.id_reserva }}</h2>
   <ul>
     <li><strong>Cliente:</strong> {{ reserva.id_cliente }}</li>
+    <li><strong>Nombre de cliente:</strong> {{cliente.nombre}} {{cliente.apellido}}</li>
+    <li><strong>DNI:</strong> {{ cliente.dni }}</li>
+    <li><strong>Email:</strong> {{ cliente.email }}</li>
+    <li><strong>Teléfono:</strong> {{ cliente.telefono }}</li>
     <li><strong>Habitación:</strong> {{ reserva.numero_habitacion }}</li>
     <li><strong>Entrada:</strong> {{ reserva.fecha_entrada.strftime('%Y-%m-%d') }}</li>
     <li><strong>Salida:</strong> {{ reserva.fecha_salida.strftime('%Y-%m-%d') }}</li>

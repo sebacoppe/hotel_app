@@ -1,12 +1,12 @@
 numero,tipo,estado,precio,planta
 5,cuadruple,disponible,0,baja
 2,cuadruple,disponible,0,baja
-26,suite_para_5,reservada,0,baja
+26,suite_para_5,disponible,0,baja
 25,suite_para_5,disponible,25000,baja
 7,cuadruple,disponible,0,baja
 8,cuadruple,disponible,0,baja
 3,triple,disponible,0,baja
-4,triple,disponible,0,baja
+4,triple,reservada,0,baja
 6,triple,disponible,0,baja
 23,doble,disponible,0,baja
 24,doble,disponible,0,baja

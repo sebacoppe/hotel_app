@@ -12,34 +12,75 @@
   </select>
 </form>
 
-<table>
-  <tr>
-    <th>Número</th>
-    <th>Tipo</th>
-    <th>Estado</th>
-    <th>Precio</th>
-    <th>Planta</th>
-    <th>Acciones</th>
-  </tr>
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+  }
+  .card {
+    border-radius: 8px;
+    padding: 15px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+  }
+  .disponible { background-color: #2ecc71; }
+  .reservada   { background-color: #f1c40f; color: #333; }
+  .ocupada     { background-color: #e74c3c; }
+
+  .submenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    color: black;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    z-index: 10;
+    font-weight: normal;
+  }
+  .submenu a {
+    display: block;
+    padding: 8px;
+    text-decoration: none;
+    color: black;
+  }
+  .submenu a:hover {
+    background-color: #eee;
+  }
+</style>
+
+<div class="grid">
   {% for h in habitaciones %}
-  <tr class="estado-{{ h.estado }}">
-    <td>{{ h.numero }}</td>
-    <td>{{ h.tipo }}</td>
-    <td>
-        <span class="badge {% if h.estado == 'ocupada' %}bg-danger{% elif h.estado == 'reservada' %}bg-warning text-dark{% else %}bg-success{% endif %}">
-            {{ h.estado.capitalize() }}
-        </span>
-    </td>
-    <td>${{ h.precio }}</td>
-    <td>{{ h.planta }}</td>
-    <td>
-      
-      <a href="{{ url_for('habitaciones.editar_habitacion', numero=h.numero) }}">🛠️ Editar habitacion</a>
-    </td>
-  </tr>  
+    <div class="card {{ h.estado }}" onclick="toggleSubmenu(this)">
+      Hab. {{ h.numero }}<br>{{ h.tipo }}
+      <div class="submenu">
+        <a href="{{ url_for('reservas.crear_reserva_desde_habitacion', numero=h.numero) }}">📝 Reservar</a>
+        <a href="{{ url_for('habitaciones.editar_habitacion', numero=h.numero) }}">🛠️ Editar</a>
+        <a href="{{ url_for('habitaciones.editar_estado', numero=h.numero) }}">🔄 Cambiar estado</a>
+      </div>
+    </div>
   {% endfor %}
-</table>
-<a href="{{ url_for('habitaciones.agregar_habitacion') }}">➕ Agregar habitación</a>
+</div>
+
+<script>
+  function toggleSubmenu(card) {
+    const submenus = document.querySelectorAll('.submenu');
+    submenus.forEach(s => s.style.display = 'none'); // cerrar todos
+    const submenu = card.querySelector('.submenu');
+    submenu.style.display = 'block';
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.card')) {
+      document.querySelectorAll('.submenu').forEach(s => s.style.display = 'none');
+    }
+  });
+</script>
 {% endblock %}
-
-

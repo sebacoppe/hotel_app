@@ -1,7 +1,8 @@
 from modelos import Reserva,cargar_reserva,guardar_reserva,cargar_clientes,cargar_habitaciones,guardar_una_reserva,sincronizar_estados_habitaciones
 from flask import Blueprint,render_template,request,redirect,url_for,flash
 from datetime import datetime
-from utils.qr import generar_qr_para_reserva 
+from utils.qr import generar_qr_para_reserva
+from utils.format import limpiar_nombre
 
 reservas_bp = Blueprint('reservas', __name__)
 
@@ -16,14 +17,14 @@ def ver_reserva(id): # reserva individual
         return redirect(url_for('reservas.ver_reservas'))
 
     cliente = next((c for c in clientes if c.id == reserva.id_cliente), None)
-    nombre_cliente = f"{cliente.nombre}_{cliente.apellido}" if cliente else "Cliente"
-    nombre_limpio = nombre_cliente.replace(" ", "_")
+    nombre_cliente = f"{cliente.nombre} {cliente.apellido}" if cliente else "Cliente"
+    nombre_limpio = limpiar_nombre(nombre_cliente)
     fecha_formateada = reserva.fecha_entrada.strftime('%Y%m%d')
 
     nombre_archivo = f"reserva_{id}_{nombre_limpio}_{fecha_formateada}.png"
     ruta_qr = f"qr/{nombre_archivo}"
 
-    return render_template('reserva_individual.html', reserva=reserva, ruta_qr=ruta_qr)
+    return render_template('reserva_individual.html', reserva=reserva, ruta_qr=ruta_qr, cliente=cliente)
 
     
     
@@ -183,6 +184,54 @@ def estado_color(estado):
         'finalizada': '#6c757d'    # gris
     }
     return colores.get(estado, '#ffc107')  # amarillo por defecto
+
+
+@reservas_bp.route('/reservas/crear_desde_habitacion/<numero>', methods=['GET','POST'])
+def crear_reserva_desde_habitacion(numero):
+    clientes = cargar_clientes()
+    habitaciones = cargar_habitaciones()
+    habitacion = next((h for h in habitaciones if h.numero == numero),None)
+    
+    if not habitacion:
+        flash("Habitacion no encontrada")
+        return redirect(url_for('habitaciones.ver_habitaciones'))
+    
+    if request.method == 'POST':
+        reservas_existentes = cargar_reserva()
+        nuevo_id = str(max([int(r.id_reserva) for r in reservas_existentes], default=0) +1)
+        
+        id_cliente = request.form['id_cliente']
+        fecha_entrada = datetime.strptime(request.form['fecha_entrada'], '%Y-%m-%d')
+        fecha_salida  = datetime.strptime(request.form['fecha_salida'], '%Y-%m-%d')
+        estado = request.form['estado']
+        total = request.form['total']
+        
+        
+        cliente = next((c for c in clientes if c.id == id_cliente), None)
+        if not cliente:
+            flash("Cliente no encontrado")
+            return redirect(url_for('reservas.crear_reserva_desde_habitacion', numero=numero))
+        
+        nueva = Reserva(nuevo_id, id_cliente , numero, fecha_entrada, fecha_salida, estado, total)
+        
+        for r in reservas_existentes:
+            if r.numero_habitacion == numero and r.estado in ['activa', 'reservada']:
+                if fecha_entrada < r.fecha_salida and fecha_salida > r.fecha_entrada:
+                    flash("La Habitacion ya esta reservada en ese periodo ")
+                    return redirect(url_for('reservas.crear_reserva_desde_habitacion', numero=numero))
+                
+        guardar_una_reserva(nueva)
+        sincronizar_estados_habitaciones()
+        
+        nombre_cliente = f"{cliente.nombre} {cliente.apellido} "
+        nombre_limpio = limpiar_nombre(nombre_cliente)
+        generar_qr_para_reserva(nuevo_id, nombre_limpio, fecha_entrada)
+        
+        flash("Reserva creada correctamente ")
+        return redirect(url_for('reservas.ver_reservas'))
+    
+    return render_template('crear_reserva_desde_habitacion.html', clientes=clientes, habitacion=habitacion)        
+        
 
 
 
