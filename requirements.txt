@@ -77,7 +77,6 @@ ptyprocess==0.7.0
 pure_eval==0.2.3
 pycparser==2.22
 Pygments==2.19.1
-pyobjc-framework-Cocoa==11.1
 pyobjc-framework-Quartz==11.1
 pyparsing==3.2.4
 pyperclip==1.11.0
