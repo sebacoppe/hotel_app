@@ -1,8 +1,14 @@
 from modelos import Reserva,cargar_reserva,guardar_reserva,cargar_clientes,cargar_habitaciones,guardar_una_reserva,sincronizar_estados_habitaciones
-from flask import Blueprint,render_template,request,redirect,url_for,flash
+from flask import Blueprint,render_template,request,redirect,url_for,flash,send_file
 from datetime import datetime
 from utils.qr import generar_qr_para_reserva
 from utils.format import limpiar_nombre
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+import io
+import os
+
+
 
 reservas_bp = Blueprint('reservas', __name__)
 
@@ -233,7 +239,100 @@ def crear_reserva_desde_habitacion(numero):
     return render_template('crear_reserva_desde_habitacion.html', clientes=clientes, habitacion=habitacion)        
         
 
+@reservas_bp.route('/reserva/<int:id>/pdf')
+def generar_pdf_reserva(id):
+    reservas = cargar_reserva()
+    clientes = cargar_clientes()
+    reserva = next((r for r in reservas if r.id_reserva == str(id)), None)
+    cliente = next((c for c in clientes if c.id == reserva.id_cliente), None)
 
+    if not reserva or not cliente:
+        flash("Reserva no encontrada")
+        return redirect(url_for('reservas.ver_reservas'))
+
+    # Crear PDF en memoria
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    pdf.setTitle(f"Reserva #{id}")
+    
+    # Dimensiones de la hoja A4
+    ancho, alto = A4
+    
+    
+    # 🖼️ Borde decorativo
+    pdf.setStrokeColorRGB(0.5, 0.5, 0.5)  # gris suave
+    pdf.setLineWidth(2)
+    pdf.rect(30, 30, ancho - 60, alto - 60)  # margen de 30 pts en cada lado
+
+    # Encabezado
+    pdf.drawImage("static/img/pleno_mar_1.jpg", 50, 730, width=60, height=60)
+    pdf.setFont("Helvetica-Bold", 18)
+    pdf.drawString(160, 780, "Hotel Pleno Mar Necochea")
+    pdf.setFont("Helvetica", 10)
+    pdf.drawString(160, 765, "Calle 87 y 2, Necochea, Buenos Aires") 
+    pdf.drawString(160, 750, "Tel: (2262) 485287 | plenomar@gmail.com")
+    pdf.drawString(400, 740, f"Fecha: {datetime.today().strftime('%d/%m/%Y')}")
+    
+    
+    # 📏 Línea divisoria entre encabezado y datos
+    pdf.setLineWidth(1)
+    pdf.line(30, 720, ancho - 30, 720)  # debajo del encabezado
+
+    # Datos del cliente
+    pdf.setFont("Helvetica-Bold", 14)
+    pdf.drawString(50, 660, "Datos del cliente")
+    pdf.setFont("Helvetica", 12)
+    pdf.drawString(50, 640, f"Nombre: {cliente.nombre} {cliente.apellido}")
+    pdf.drawString(50, 620, f"DNI: {cliente.dni}")
+    pdf.drawString(50, 600, f"Email: {cliente.email}")
+    pdf.drawString(50, 580, f"Teléfono: {cliente.telefono}")
+    
+    # 📏 Línea entre datos del cliente y reserva
+    pdf.line(30, 560, ancho - 30, 560)
+
+    # Datos de la reserva
+    pdf.setFont("Helvetica-Bold", 14)
+    pdf.drawString(50, 520, "Datos de la reserva")
+    pdf.setFont("Helvetica", 12)
+    pdf.drawString(50, 500, f"Reserva #: {reserva.id_reserva}")
+    pdf.drawString(50, 480, f"Habitación: {reserva.numero_habitacion}")
+    pdf.drawString(50, 460, f"Entrada: {reserva.fecha_entrada.strftime('%Y-%m-%d')}")
+    pdf.drawString(50, 440, f"Salida: {reserva.fecha_salida.strftime('%Y-%m-%d')}")
+    pdf.drawString(50, 420, f"Estado: {reserva.estado}")
+    pdf.drawString(50, 400, f"Total: ${reserva.total}")
+    
+    
+    # 📏 Línea entre datos de reserva y QR
+    pdf.line(30, 380, ancho - 30, 380)
+
+    # QR
+    nombre_cliente = f"{cliente.nombre} {cliente.apellido}".strip()
+    nombre_limpio = limpiar_nombre(nombre_cliente)
+    fecha_formateada = reserva.fecha_entrada.strftime('%Y%m%d')
+    nombre_archivo = f"reserva_{id}_{nombre_limpio}_{fecha_formateada}.png"
+    ruta_qr = os.path.join("static", "qr", nombre_archivo)
+    
+    if os.path.exists(ruta_qr):
+        pdf.setFont("Helvetica-Bold", 14)
+        pdf.drawString(50, 360, "Código QR de la reserva")
+        pdf.drawImage(ruta_qr, 50, 190, width=150, height=150)
+        
+    # 📏 Línea antes de la firma
+    pdf.line(30, 150, ancho - 30, 150)    
+
+    # Firma y pie
+    pdf.setFont("Helvetica", 10)
+    pdf.drawString(50, 100, "Documento generado automáticamente por Hotel Pleno Mar Necochea")
+    pdf.drawString(50, 85, "Firma autorizada: Guillermo Federico Comas")
+    pdf.drawString(200, 40, "Rosana Comas – Gerente de Recepción")
+
+
+
+    pdf.showPage()
+    pdf.save()
+    buffer.seek(0)
+
+    return send_file(buffer, as_attachment=True, download_name=f"reserva_{id}.pdf", mimetype='application/pdf')
 
 
         

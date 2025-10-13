@@ -23,6 +23,8 @@
   <a href="{{ url_for('static', filename=ruta_qr) }}" download class="btn btn-secondary">⬇️ Descargar QR</a>
   <!-- Botón para compartir por WhatsApp -->
   <a href="https://wa.me/?text={{ request.url }}" target="_blank" class="btn btn-success">📲 Compartir por WhatsApp</a>
+  <!-- Botón para generar PDF -->
+  <a href="{{ url_for('reservas.generar_pdf_reserva', id=reserva.id_reserva) }}" class="btn btn-primary">🧾 Generar PDF</a>
   </div>
   <br><br>
   <a href="{{ url_for('reservas.ver_reservas') }}" class="btn btn-secondary">← Volver al listado</a>

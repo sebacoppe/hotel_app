@@ -10,6 +10,24 @@
     <option value="ocupada" {% if estado_filtro == 'ocupada' %}selected{% endif %}>Ocupada</option>
     <option value="reservada" {% if estado_filtro == 'reservada' %}selected{% endif %}>Reservada</option>
   </select>
+  <label for="tipo">Tipo:</label>
+  <select name="tipo" onchange="this.form.submit()">
+    <option value="">-- Todos --</option>
+    <option value="triple" {% if tipo_filtro == 'triple' %}selected{% endif %}>Triple</option>
+    <option value="doble" {% if tipo_filtro == 'doble' %}selected{% endif %}>Doble</option>
+    <option value="cuadruple" {% if tipo_filtro == 'cuadruple' %}selected{% endif %}>Cuadruple</option>
+    <option value="suite_para_5" {% if tipo_filtro == 'suite_para_5' %}selected{% endif %}>Suite para 5</option>
+    <option value="suite_para_7" {% if tipo_filtro == 'suite_para_7' %}selected{% endif %}>Suite para 7</option>
+  </select>
+  <label for="fecha_entrada">Desde:</label>
+  <input type="date" name="fecha_entrada" value="{{ fecha_entrada }}" class="mx-2">
+
+  <label for="fecha_salida">Hasta:</label>
+  <input type="date" name="fecha_salida" value="{{ fecha_salida }}" class="mx-2">
+
+  <button type="submit" class="btn btn-primary">Filtrar</button>
+
+
 </form>
 
 <style>

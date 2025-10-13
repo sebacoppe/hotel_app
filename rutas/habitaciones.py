@@ -11,24 +11,51 @@ habitaciones_bp = Blueprint('habitaciones',__name__)
 @habitaciones_bp.route('/habitaciones')
 def ver_habitaciones():
     estado_filtro = request.args.get('estado')
+    tipo_filtro = request.args.get('tipo')
+    fecha_entrada = request.args.get('fecha_entrada')
+    fecha_salida = request.args.get('fecha_salida')
+
     habitaciones = cargar_habitaciones()
     reservas = cargar_reserva()
-    
+
     actualizar_estados_por_fecha(habitaciones, reservas)
-    
     guardar_habitaciones(habitaciones)
-    
+
+    # Filtro por estado
     if estado_filtro:
         habitaciones = [h for h in habitaciones if h.estado == estado_filtro]
-        
+
+    # Filtro por tipo
+    if tipo_filtro:
+        habitaciones = [h for h in habitaciones if h.tipo == tipo_filtro]
+
+    # Filtro por disponibilidad en fechas
+    if fecha_entrada and fecha_salida:
+        try:
+            entrada = datetime.strptime(fecha_entrada, '%Y-%m-%d')
+            salida = datetime.strptime(fecha_salida, '%Y-%m-%d')
+
+            ocupadas = set()
+            for r in reservas:
+                if r.estado in ['activa', 'reservada']:
+                    if entrada < r.fecha_salida and salida > r.fecha_entrada:
+                        ocupadas.add(r.numero_habitacion)
+
+            habitaciones = [h for h in habitaciones if h.numero not in ocupadas]
+        except ValueError:
+            flash("Fechas inválidas")
+
     disponibles = sum(1 for h in habitaciones if h.estado == 'disponible')
-        
+
     return render_template(
-        'habitaciones.html', 
+        'habitaciones.html',
         habitaciones=habitaciones,
-        disponibles=disponibles, 
-        estado_filtro=estado_filtro
-        )
+        disponibles=disponibles,
+        estado_filtro=estado_filtro,
+        tipo_filtro=tipo_filtro,
+        fecha_entrada=fecha_entrada,
+        fecha_salida=fecha_salida
+    )
 
 
 
