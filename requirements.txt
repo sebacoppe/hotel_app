@@ -75,13 +75,8 @@ prompt_toolkit==3.0.51
 psutil==7.0.0
 ptyprocess==0.7.0
 pure_eval==0.2.3
-PyAutoGUI==0.9.54
 pycparser==2.22
-pygame==2.6.1
-PyGetWindow==0.0.9
 Pygments==2.19.1
-PyMsgBox==2.0.1
-pyobjc-core==11.1
 pyobjc-framework-Cocoa==11.1
 pyobjc-framework-Quartz==11.1
 pyparsing==3.2.4
